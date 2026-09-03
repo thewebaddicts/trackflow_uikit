@@ -1,0 +1,28 @@
+/**
+ * Theme tokens for @thewebaddicts/trackflow-uikit.
+ * Apps with existing portal-* CSS in globals.css can skip this file.
+ * Full compiled field styles: run `npm run build:css` in this package (WIP).
+ */
+.tf-uikit,
+:root {
+  --paper: #ffffff;
+  --foreground: #152033;
+  --brand-brand-50: #f3f1fd;
+  --brand-brand-100: #e7e3fb;
+  --brand-brand-200: #cfc7f6;
+  --brand-brand-300: #a89aed;
+  --brand-brand-500: #5b4fd6;
+  --brand-brand-600: #4a3fb8;
+  --brand-brand-700: #3d3496;
+  --brand-brand-500-rgb: 91 79 214;
+  --brand-brand-600-rgb: 74 63 184;
+  --brand-surface-50: #f4f6f9;
+  --brand-surface-100: #e9eef4;
+  --brand-surface-200: #d5dee8;
+  --brand-surface-300: #b4c2d1;
+  --brand-surface-500: #6b7c90;
+  --brand-surface-600: #526274;
+  --brand-surface-700: #3d4b5c;
+  --brand-surface-800: #283445;
+  --brand-surface-900: #152033;
+}

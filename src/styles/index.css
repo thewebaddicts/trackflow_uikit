@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #ffffff;
+  --foreground: #152033;
+  --brand-brand-50: #f3f1fd;
+  --brand-brand-100: #e7e3fb;
+  --brand-brand-200: #cfc7f6;
+  --brand-brand-300: #a89aed;
+  --brand-brand-500: #5b4fd6;
+  --brand-brand-600: #4a3fb8;
+  --brand-brand-700: #3d3496;
+  --brand-brand-500-rgb: 91 79 214;
+  --brand-brand-600-rgb: 74 63 184;
+  --brand-surface-50: #f4f6f9;
+  --brand-surface-100: #e9eef4;
+  --brand-surface-200: #d5dee8;
+  --brand-surface-300: #b4c2d1;
+  --brand-surface-500: #6b7c90;
+  --brand-surface-600: #526274;
+  --brand-surface-700: #3d4b5c;
+  --brand-surface-800: #283445;
+  --brand-surface-900: #152033;
+}
+
+@theme inline {
+  --font-family: ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-family);
+  --color-paper: var(--paper);
+  --color-foreground: var(--foreground);
+  --color-surface-50: var(--brand-surface-50);
+  --color-surface-100: var(--brand-surface-100);
+  --color-surface-200: var(--brand-surface-200);
+  --color-surface-300: var(--brand-surface-300);
+  --color-surface-500: var(--brand-surface-500);
+  --color-surface-600: var(--brand-surface-600);
+  --color-surface-700: var(--brand-surface-700);
+  --color-surface-800: var(--brand-surface-800);
+  --color-surface-900: var(--brand-surface-900);
+  --color-brand-50: var(--brand-brand-50);
+  --color-brand-100: var(--brand-brand-100);
+  --color-brand-200: var(--brand-brand-200);
+  --color-brand-300: var(--brand-brand-300);
+  --color-brand-500: var(--brand-brand-500);
+  --color-brand-600: var(--brand-brand-600);
+  --color-brand-700: var(--brand-brand-700);
+  --color-success-500: #2d9b6f;
+  --shadow-lift: 0 8px 32px rgb(11 20 34 / 0.1);
+  --shadow-soft: 0 1px 2px rgb(11 20 34 / 0.04), 0 10px 28px rgb(11 20 34 / 0.05);
+}
+
+@import "./fields-layer.css";
