@@ -1,4 +1,48 @@
 @layer components {
+  .portal-file-field {
+    @apply flex cursor-pointer items-center gap-3 rounded-xl border border-dashed border-surface-300/90 bg-surface-50/70 px-4 py-3.5 text-start transition hover:border-brand-300 hover:bg-brand-50/40 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-brand-500/15 dark:border-surface-600 dark:bg-surface-900/20 dark:hover:border-brand-500/50 dark:hover:bg-brand-500/10;
+  }
+
+  .portal-file-field--filled {
+    @apply border-solid border-surface-200/90 bg-paper/90 shadow-[inset_0_1px_1px_rgb(11_20_34_/_0.03)] hover:border-brand-300 dark:border-surface-700 dark:bg-paper/90;
+  }
+
+  .portal-file-field--dragging {
+    @apply border-brand-500 bg-brand-50/40 dark:bg-brand-500/10;
+  }
+
+  .portal-file-field--error {
+    @apply border-red-300 hover:border-red-400 focus-visible:ring-red-500/15 dark:border-red-500/40;
+  }
+
+  .portal-file-field--disabled {
+    @apply cursor-not-allowed opacity-60 hover:border-surface-300/90 hover:bg-surface-50/70 dark:hover:border-surface-600 dark:hover:bg-surface-900/20;
+  }
+
+  .portal-file-field__icon {
+    @apply flex size-10 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-300;
+  }
+
+  .portal-file-field__icon--filled {
+    @apply bg-surface-100 text-surface-600 dark:bg-surface-800 dark:text-surface-300;
+  }
+
+  .portal-file-field__body {
+    @apply min-w-0 flex-1;
+  }
+
+  .portal-file-field__title {
+    @apply block truncate text-[13px] font-medium text-surface-800 dark:text-surface-200;
+  }
+
+  .portal-file-field__hint {
+    @apply mt-0.5 block truncate text-[12px] text-surface-500;
+  }
+
+  .portal-file-field__clear {
+    @apply flex size-8 shrink-0 items-center justify-center rounded-md text-surface-400 transition hover:bg-surface-100 hover:text-surface-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/30 dark:hover:bg-surface-800 dark:hover:text-surface-200;
+  }
+
   .portal-input {
     @apply h-9 w-full rounded-lg border border-surface-200/90 bg-paper/90 px-3 text-[13px] text-surface-900 shadow-[inset_0_1px_1px_rgb(11_20_34_/_0.03)] transition placeholder:text-surface-500 focus:border-brand-500 focus:bg-paper focus:outline-none focus:ring-[3px] focus:ring-brand-500/15;
   }

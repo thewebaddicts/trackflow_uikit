@@ -50,6 +50,8 @@ export type UiKitMessages = {
   };
   import: {
     selectFile: string;
+    dropHint: string;
+    replaceHint: string;
   };
 };
 
@@ -102,7 +104,9 @@ export const enMessages: UiKitMessages = {
     passwordPlaceholder: "Password",
   },
   import: {
-    selectFile: "Choose file",
+    selectFile: "Choose a file",
+    dropHint: "Drop a file here, or click to browse",
+    replaceHint: "Click to replace",
   },
 };
 
@@ -156,6 +160,8 @@ export const arMessages: UiKitMessages = {
   },
   import: {
     selectFile: "اختر ملفاً",
+    dropHint: "أسقط ملفاً هنا، أو انقر للتصفح",
+    replaceHint: "انقر للاستبدال",
   },
 };
 

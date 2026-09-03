@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { cn, FieldShell } from "./field";
 
 type CheckboxFieldProps = {
@@ -23,13 +24,15 @@ export function CheckboxField({
   hint,
   error,
   checked,
-  defaultChecked,
+  defaultChecked = false,
   required,
   disabled,
   className,
   onChange,
 }: CheckboxFieldProps) {
   const isControlled = checked !== undefined;
+  const [internalChecked, setInternalChecked] = useState(Boolean(defaultChecked));
+  const isChecked = isControlled ? Boolean(checked) : internalChecked;
 
   return (
     <FieldShell
@@ -53,19 +56,18 @@ export function CheckboxField({
             id={controlId}
             name={name}
             type="checkbox"
-            {...(isControlled ? { checked } : { defaultChecked })}
+            checked={isChecked}
             disabled={disabled}
             required={required}
             className="peer sr-only"
-            onChange={(event) => onChange?.(event.target.checked)}
+            onChange={(event) => {
+              if (!isControlled) {
+                setInternalChecked(event.target.checked);
+              }
+              onChange?.(event.target.checked);
+            }}
           />
-          <span
-            className={cn(
-              "portal-checkbox",
-              (isControlled ? checked : undefined) && "is-checked",
-            )}
-            aria-hidden="true"
-          />
+          <span className={cn("portal-checkbox", isChecked && "is-checked")} aria-hidden="true" />
           <span className="cms-checkbox-label">
             {label}
             {required ? <span className="text-brand-600"> *</span> : null}
@@ -86,13 +88,18 @@ export function ToggleField({
   label,
   hint,
   error,
-  checked = false,
+  checked,
+  defaultChecked = false,
   required,
   disabled,
   className,
   labelPlacement = "inline",
   onChange,
 }: ToggleFieldProps) {
+  const isControlled = checked !== undefined;
+  const [internalChecked, setInternalChecked] = useState(Boolean(defaultChecked));
+  const isChecked = isControlled ? Boolean(checked) : internalChecked;
+
   return (
     <FieldShell
       id={id}
@@ -111,11 +118,16 @@ export function ToggleField({
               id={controlId}
               name={name}
               type="checkbox"
-              checked={checked}
+              checked={isChecked}
               disabled={disabled}
               required={required}
               className="peer sr-only"
-              onChange={(event) => onChange?.(event.target.checked)}
+              onChange={(event) => {
+                if (!isControlled) {
+                  setInternalChecked(event.target.checked);
+                }
+                onChange?.(event.target.checked);
+              }}
             />
             <span className="cms-toggle-track" aria-hidden="true" />
           </label>
