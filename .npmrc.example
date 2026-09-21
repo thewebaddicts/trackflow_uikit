@@ -1,0 +1,4 @@
+# Only needed if you publish to npm under the @thewebaddicts scope.
+# Create an npm account + org, then: npm login
+#
+# Consumers of a public package do not need a token.

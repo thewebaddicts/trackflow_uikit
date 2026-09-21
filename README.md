@@ -4,15 +4,40 @@ Shared form field components and schema-driven forms for TrackFlow apps (CMS, Op
 
 ## Install
 
+The GitHub repo is **public**. Prefer the published npm package once it exists:
+
 ```bash
 npm install @thewebaddicts/trackflow-uikit
 ```
 
-From Git (before publish):
+Until / instead of npm, install from Git (no token needed):
 
 ```bash
-npm install git+ssh://git@github.com:thewebaddicts/trackflow_uikit.git
+npm install github:thewebaddicts/trackflow_uikit#v0.1.0
 ```
+
+### Local sibling (day-to-day while hacking UIKit)
+
+If all repos sit next to each other under `projects/`:
+
+```json
+"@thewebaddicts/trackflow-uikit": "file:../trackflow_uikit"
+```
+
+Then: edit uikit → `npm run build` in uikit → restart the app. No vendor copy.
+
+### Publish a new version (UIKit maintainers)
+
+One-time: create the `@thewebaddicts` org on [npmjs.com](https://www.npmjs.com) (or rename the package scope), then `npm login`.
+
+```bash
+cd trackflow_uikit
+npm version patch   # or minor / major
+npm publish --access public
+git push && git push --tags
+```
+
+Then in each consuming app bump the version and `npm install`.
 
 ## Setup
 

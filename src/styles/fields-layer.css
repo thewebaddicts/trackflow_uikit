@@ -837,16 +837,17 @@
     @apply size-3.5;
   }
 
+  /* Embedded triggers always fill their parent control; size only tunes type and padding. */
   .portal-select-trigger--embedded-xs {
-    @apply h-7 gap-1 px-2 text-[11px];
+    @apply h-full gap-1 px-2 text-[11px];
   }
 
   .portal-select-trigger--embedded-sm {
-    @apply h-8 gap-1.5 px-2.5 text-[12px];
+    @apply h-full gap-1.5 px-2.5 text-[12px];
   }
 
   .portal-select-trigger--embedded-lg {
-    @apply h-10 gap-2 px-3.5 text-[14px];
+    @apply h-full gap-2 px-3.5 text-[14px];
   }
 
   .portal-select-trigger--embedded-xs .portal-select-chevron,

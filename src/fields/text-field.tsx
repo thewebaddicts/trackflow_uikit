@@ -3,6 +3,7 @@
 import { Eye, EyeOff } from "lucide-react";
 import { useState, type InputHTMLAttributes, type ReactNode } from "react";
 import { cn, FieldShell } from "./field";
+import { blurNumberInputOnWheel } from "../lib/wheel-guard";
 import { useResolvedPlaceholder } from "../i18n/use-field-placeholder";
 import { useI18n } from "../i18n/I18nProvider";
 
@@ -63,6 +64,12 @@ export function TextField({
             aria-invalid={Boolean(resolvedError)}
             placeholder={resolvedPlaceholder}
             {...inputProps}
+            onWheel={(event) => {
+              if (resolvedType === "number") {
+                blurNumberInputOnWheel(event);
+              }
+              inputProps.onWheel?.(event);
+            }}
           />
         );
 

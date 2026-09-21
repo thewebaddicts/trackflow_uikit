@@ -43,6 +43,8 @@ export type SelectInputProps = {
   size?: SelectInputSize;
   panelMinWidth?: number;
   embedded?: boolean;
+  /** Set to -1 to keep the trigger out of the tab sequence while staying clickable. */
+  tabIndex?: number;
   "aria-label"?: string;
   api?: string | null;
   searchParam?: string;
@@ -262,6 +264,7 @@ export function SelectInput({
   size = "default",
   panelMinWidth,
   embedded = false,
+  tabIndex = 0,
   "aria-label": ariaLabel,
   api = null,
   searchParam = "search",
@@ -791,7 +794,7 @@ export function SelectInput({
       <div
         ref={triggerRef}
         role="button"
-        tabIndex={disabled ? -1 : 0}
+        tabIndex={disabled ? -1 : tabIndex}
         id={resolvedId}
         className={cn(
           selectTriggerClass(size, embedded),

@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
+
 import { FieldShell } from "./field";
+import { blurNumberInputOnWheel } from "../lib/wheel-guard";
 import { useClearFieldError } from "../validation/form-validation";
 import { useI18n } from "../i18n/I18nProvider";
 
@@ -33,10 +36,45 @@ export function QuantityStepper({
 }: QuantityStepperProps) {
   const { t } = useI18n();
   const clearFieldError = useClearFieldError(name);
+  // Lets the field sit empty or out of range while typing, instead of clamping every keystroke.
+  const [draft, setDraft] = useState<string | null>(null);
+  const [committed, setCommitted] = useState(value);
+
+  if (value !== committed) {
+    setCommitted(value);
+    setDraft(null);
+  }
 
   function emitChange(next: number) {
+    setDraft(null);
     clearFieldError();
     onChange(next);
+  }
+
+  function clamp(next: number) {
+    return Math.max(min, max == null ? next : Math.min(max, next));
+  }
+
+  function handleTyping(raw: string) {
+    setDraft(raw);
+    const parsed = Math.floor(Number(raw));
+    if (raw.trim() === "" || !Number.isFinite(parsed) || parsed !== clamp(parsed)) {
+      return;
+    }
+    clearFieldError();
+    onChange(parsed);
+  }
+
+  function commitDraft() {
+    if (draft == null) {
+      return;
+    }
+    const parsed = Math.floor(Number(draft));
+    setDraft(null);
+    if (draft.trim() === "" || !Number.isFinite(parsed)) {
+      return;
+    }
+    emitChange(clamp(parsed));
   }
 
   return (
@@ -68,13 +106,11 @@ export function QuantityStepper({
             max={max}
             step={1}
             className="min-w-0 flex-1 border-0 bg-transparent text-center text-[13px] font-medium text-surface-900 outline-none"
-            value={value}
+            value={draft ?? String(value)}
             aria-invalid={Boolean(resolvedError)}
-            onChange={(e) => {
-              const raw = Math.floor(Number(e.target.value) || min);
-              const capped = max == null ? raw : Math.min(max, raw);
-              emitChange(Math.max(min, capped));
-            }}
+            onChange={(e) => handleTyping(e.target.value)}
+            onWheel={blurNumberInputOnWheel}
+            onBlur={commitDraft}
           />
           <button
             type="button"

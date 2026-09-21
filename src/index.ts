@@ -65,6 +65,7 @@ export {
   useClearFieldError,
   useFieldError,
   isValidationError,
+  validationErrorsFromUnknown,
   type ValidationErrorMap,
   type ValidatedFormHelpers,
 } from "./validation/form-validation";

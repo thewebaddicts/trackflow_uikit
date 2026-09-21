@@ -4,7 +4,10 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
+  useReducer,
+  useRef,
   useState,
   type FormEvent,
   type ReactNode,
@@ -13,15 +16,34 @@ import { useI18n } from "../i18n/I18nProvider";
 
 export type ValidationErrorMap = Record<string, string>;
 
+export function validationErrorsFromUnknown(error: unknown): ValidationErrorMap | null {
+  if (typeof error !== "object" || error === null) {
+    return null;
+  }
+
+  const candidate = (error as { validationErrors?: unknown }).validationErrors;
+
+  if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
+    return null;
+  }
+
+  const errors: ValidationErrorMap = {};
+
+  for (const [key, value] of Object.entries(candidate as Record<string, unknown>)) {
+    if (typeof value === "string" && value.trim() !== "") {
+      errors[key] = value;
+    } else if (Array.isArray(value) && typeof value[0] === "string" && value[0].trim() !== "") {
+      errors[key] = value[0];
+    }
+  }
+
+  return Object.keys(errors).length > 0 ? errors : null;
+}
+
 export function isValidationError(
   error: unknown,
 ): error is { validationErrors: ValidationErrorMap } {
-  return (
-    typeof error === "object" &&
-    error !== null &&
-    "validationErrors" in error &&
-    typeof (error as { validationErrors: unknown }).validationErrors === "object"
-  );
+  return validationErrorsFromUnknown(error) != null;
 }
 
 type FormValidationContextValue = {
@@ -32,12 +54,36 @@ type FormValidationContextValue = {
   getError: (name?: string | null) => string | null;
   applyApiError: (error: unknown, fallback?: string) => string | null;
   hasErrors: boolean;
+  /** Called by fields that show their own message; returns the unregister callback. */
+  registerInlineField: (name: string) => () => void;
+  hasInlineField: (name: string) => boolean;
 };
 
 const FormValidationContext = createContext<FormValidationContextValue | null>(null);
 
 export function FormValidationProvider({ children }: { children: ReactNode }) {
   const [errors, setErrorsState] = useState<ValidationErrorMap>({});
+  // Fields on screen print their own message, so the summary only reports what is not visible.
+  const inlineFields = useRef(new Map<string, number>());
+  const [inlineFieldsVersion, bumpInlineFields] = useReducer((version: number) => version + 1, 0);
+
+  const registerInlineField = useCallback((name: string) => {
+    const counts = inlineFields.current;
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+    bumpInlineFields();
+
+    return () => {
+      const remaining = (counts.get(name) ?? 1) - 1;
+
+      if (remaining > 0) {
+        counts.set(name, remaining);
+      } else {
+        counts.delete(name);
+      }
+
+      bumpInlineFields();
+    };
+  }, []);
 
   const setErrors = useCallback((next: ValidationErrorMap | null) => {
     setErrorsState(next && Object.keys(next).length > 0 ? next : {});
@@ -87,8 +133,10 @@ export function FormValidationProvider({ children }: { children: ReactNode }) {
 
   const applyApiError = useCallback(
     (error: unknown, fallback?: string): string | null => {
-      if (isValidationError(error)) {
-        setErrors(error.validationErrors);
+      const fieldErrors = validationErrorsFromUnknown(error);
+
+      if (fieldErrors) {
+        setErrors(fieldErrors);
         return null;
       }
 
@@ -112,8 +160,20 @@ export function FormValidationProvider({ children }: { children: ReactNode }) {
       getError,
       applyApiError,
       hasErrors: Object.keys(errors).length > 0,
+      registerInlineField,
+      hasInlineField: (name: string) => inlineFields.current.has(name),
     }),
-    [errors, setErrors, clearErrors, clearError, getError, applyApiError],
+    // inlineFieldsVersion refreshes hasInlineField as fields mount and unmount.
+    [
+      errors,
+      setErrors,
+      clearErrors,
+      clearError,
+      getError,
+      applyApiError,
+      registerInlineField,
+      inlineFieldsVersion,
+    ],
   );
 
   return (
@@ -150,6 +210,15 @@ export function useFieldError(
   explicitError?: string | null,
 ): string | null {
   const context = useFormValidationOptional();
+  const registerInlineField = context?.registerInlineField;
+
+  useEffect(() => {
+    if (!name || !registerInlineField) {
+      return;
+    }
+
+    return registerInlineField(name);
+  }, [name, registerInlineField]);
 
   if (explicitError) {
     return explicitError;
@@ -160,6 +229,7 @@ export function useFieldError(
 
 export type ValidatedFormHelpers = {
   applyApiError: (error: unknown, fallback?: string) => string | null;
+  setErrors: (errors: ValidationErrorMap | null) => void;
   clearErrors: () => void;
 };
 
@@ -200,15 +270,16 @@ function ValidatedFormInner({
     helpers: ValidatedFormHelpers,
   ) => void | Promise<void>;
 }) {
-  const { applyApiError, clearErrors } = useFormValidation();
+  const { applyApiError, clearErrors, setErrors } = useFormValidation();
   const helpers = useMemo(
-    () => ({ applyApiError, clearErrors }),
-    [applyApiError, clearErrors],
+    () => ({ applyApiError, setErrors, clearErrors }),
+    [applyApiError, setErrors, clearErrors],
   );
 
   return (
     <form
       className={className}
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
         clearErrors();
@@ -246,15 +317,14 @@ export function FormFieldError({
 
 export function FormValidationSummary({ title }: { title?: string }) {
   const { t } = useI18n();
-  const { hasErrors, errors } = useFormValidation();
+  const { errors, hasInlineField } = useFormValidation();
   const resolvedTitle = title ?? t("common.pleaseFix");
+  const entries = Object.entries(errors).filter(([field]) => !hasInlineField(field));
+  const count = entries.length;
 
-  if (!hasErrors) {
+  if (count === 0) {
     return null;
   }
-
-  const entries = Object.entries(errors);
-  const count = entries.length;
 
   return (
     <div

@@ -11,6 +11,7 @@ import { cn, FieldShell } from "./field";
 import { SelectInput } from "./select-input";
 import { useResolvedPlaceholder } from "../i18n/use-field-placeholder";
 import { formatAmountInput, parseAmountInput } from "../lib/format-amount";
+import { blurNumberInputOnWheel } from "../lib/wheel-guard";
 
 export type UnitOption = {
   value: string;
@@ -180,6 +181,12 @@ export function UnitField({
               handleChange(e.target.value, e.target.selectionStart);
             }}
             onKeyDown={handleKeyDown}
+            onWheel={(event) => {
+              if (resolvedType === "number") {
+                blurNumberInputOnWheel(event);
+              }
+              inputProps.onWheel?.(event);
+            }}
             onFocus={onFocus}
             onBlur={onBlur}
           />
@@ -192,6 +199,8 @@ export function UnitField({
               <SelectInput
                 embedded
                 size="xs"
+                /* Tab moves between value fields; the unit is reached by click. */
+                tabIndex={-1}
                 aria-label={`${label ?? "Value"} unit`}
                 options={units}
                 value={unit}
