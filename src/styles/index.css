@@ -16,6 +16,7 @@
   --brand-surface-100: #e9eef4;
   --brand-surface-200: #d5dee8;
   --brand-surface-300: #b4c2d1;
+  --brand-surface-400: #8fa0b0;
   --brand-surface-500: #6b7c90;
   --brand-surface-600: #526274;
   --brand-surface-700: #3d4b5c;
@@ -32,6 +33,7 @@
   --color-surface-100: var(--brand-surface-100);
   --color-surface-200: var(--brand-surface-200);
   --color-surface-300: var(--brand-surface-300);
+  --color-surface-400: var(--brand-surface-400);
   --color-surface-500: var(--brand-surface-500);
   --color-surface-600: var(--brand-surface-600);
   --color-surface-700: var(--brand-surface-700);

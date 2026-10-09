@@ -13,7 +13,8 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
-    "./styles.css": "./dist/styles.css"
+    "./styles.css": "./dist/styles.css",
+    "./fields.css": "./dist/fields.css"
   },
   "files": [
     "dist"
@@ -22,7 +23,7 @@
     "*.css"
   ],
   "scripts": {
-    "build": "tsup && cp src/styles/tokens.css dist/styles.css",
+    "build": "tsup && cp src/styles/tokens.css dist/styles.css && cp src/styles/fields-layer.css dist/fields.css",
     "build:css": "tailwindcss -i ./src/styles/index.css -o ./dist/styles.css --minify",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",

@@ -1,7 +1,7 @@
 /**
  * Theme tokens for @thewebaddicts/trackflow-uikit.
- * Apps with existing portal-* CSS in globals.css can skip this file.
- * Full compiled field styles: run `npm run build:css` in this package (WIP).
+ * Apps that define their own --brand-* tokens can skip this file.
+ * Field styles ship separately as Tailwind source: `@import "@thewebaddicts/trackflow-uikit/fields.css";`
  */
 .tf-uikit,
 :root {
@@ -20,6 +20,7 @@
   --brand-surface-100: #e9eef4;
   --brand-surface-200: #d5dee8;
   --brand-surface-300: #b4c2d1;
+  --brand-surface-400: #8fa0b0;
   --brand-surface-500: #6b7c90;
   --brand-surface-600: #526274;
   --brand-surface-700: #3d4b5c;
