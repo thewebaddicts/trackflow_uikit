@@ -21,6 +21,9 @@ import { localizedStoredLabel } from "../i18n/I18nProvider";
 
 type SelectValue = string | string[];
 
+/** Keep the multi trigger input-height; overflow is summarized like SMSA. */
+const MULTI_VISIBLE_CHIPS = 2;
+
 export type SelectInputSize = "xs" | "sm" | "default" | "lg";
 
 export type SelectInputProps = {
@@ -822,7 +825,7 @@ export function SelectInput({
             <span className="portal-select-placeholder">{resolvedPlaceholder}</span>
           ) : multiple ? (
             <div className="portal-select-chips">
-              {selectedLabels.map((itemLabel, index) => (
+              {selectedLabels.slice(0, MULTI_VISIBLE_CHIPS).map((itemLabel, index) => (
                 <span key={`${selected[index]}-${itemLabel}`} className="portal-select-chip">
                   <span className="truncate">{itemLabel}</span>
                   <button
@@ -840,6 +843,13 @@ export function SelectInput({
                   </button>
                 </span>
               ))}
+              {selectedLabels.length > MULTI_VISIBLE_CHIPS ? (
+                <span className="portal-select-chip portal-select-chip--more">
+                  {t("common.moreSelected", {
+                    count: String(selectedLabels.length - MULTI_VISIBLE_CHIPS),
+                  })}
+                </span>
+              ) : null}
             </div>
           ) : (
             <span className="portal-select-single-label">{selectedLabels[0]}</span>

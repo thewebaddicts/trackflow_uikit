@@ -441,11 +441,11 @@
   }
 
   .portal-select-trigger--multiple {
-    @apply h-auto min-h-9 items-start py-1.5;
+    @apply h-auto min-h-9 items-center py-1.5;
   }
 
   .portal-select-trigger--multiple .portal-select-chevron {
-    @apply mt-0.5 self-start;
+    @apply self-center;
   }
 
   .portal-select-trigger--xs.portal-select-trigger--multiple {
@@ -461,11 +461,15 @@
   }
 
   .portal-select-chips {
-    @apply flex flex-wrap items-center gap-1;
+    @apply flex flex-nowrap items-center gap-1 overflow-hidden;
   }
 
   .portal-select-chip {
-    @apply inline-flex max-w-full shrink-0 items-center gap-1 rounded-md border border-brand-200/80 bg-brand-50 px-2 py-0.5 text-[11px] font-medium leading-tight text-brand-700 dark:border-brand-500/30 dark:bg-brand-500/25 dark:text-brand-300;
+    @apply inline-flex max-w-[12rem] shrink-0 items-center gap-1 rounded-md border border-brand-200/80 bg-brand-50 px-2 py-0.5 text-[11px] font-medium leading-tight text-brand-700 dark:border-brand-500/30 dark:bg-brand-500/25 dark:text-brand-300;
+  }
+
+  .portal-select-chip--more {
+    @apply shrink-0 border-surface-200/80 bg-surface-50 text-surface-600 dark:border-surface-500/40 dark:bg-surface-500/20 dark:text-surface-300;
   }
 
   .portal-select-chip-remove {

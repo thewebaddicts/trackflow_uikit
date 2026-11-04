@@ -28,6 +28,7 @@ export type UiKitMessages = {
     unavailable: string;
     selectEndDate: string;
     clear: string;
+    moreSelected: string;
   };
   fields: {
     enterValue: string;
@@ -83,6 +84,7 @@ export const enMessages: UiKitMessages = {
     unavailable: "Unavailable",
     selectEndDate: "Select end date",
     clear: "Clear",
+    moreSelected: "+{count} more",
   },
   fields: {
     enterValue: "Enter value",
@@ -138,6 +140,7 @@ export const arMessages: UiKitMessages = {
     unavailable: "غير متاح",
     selectEndDate: "اختر تاريخ الانتهاء",
     clear: "مسح",
+    moreSelected: "+{count} أخرى",
   },
   fields: {
     enterValue: "أدخل القيمة",
