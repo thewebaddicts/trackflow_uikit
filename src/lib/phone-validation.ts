@@ -15,24 +15,6 @@ function resolveCountry(country?: string): Country | undefined {
   return undefined;
 }
 
-function passesCompletenessCheck(phone: string, country?: string): boolean {
-  const defaultCountry = resolveCountry(country);
-  const parsed = parsePhoneNumber(phone.trim(), defaultCountry);
-
-  if (!parsed) {
-    return false;
-  }
-
-  const national = parsed.nationalNumber;
-  const phoneCountry = parsed.country ?? defaultCountry;
-
-  if (phoneCountry === "LB" && /^[378]/.test(national) && national.length < 8) {
-    return false;
-  }
-
-  return true;
-}
-
 export function isPhoneNumberValid(phone: string, country?: string): boolean {
   const trimmed = phone.trim();
 
@@ -42,11 +24,7 @@ export function isPhoneNumberValid(phone: string, country?: string): boolean {
 
   const defaultCountry = resolveCountry(country);
 
-  if (!isValidPhoneNumber(trimmed, defaultCountry)) {
-    return false;
-  }
-
-  return passesCompletenessCheck(trimmed, country);
+  return isValidPhoneNumber(trimmed, defaultCountry);
 }
 
 export function validatePhoneNumber(phone: string, country?: string): string | null {
