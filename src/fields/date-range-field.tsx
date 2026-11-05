@@ -35,6 +35,10 @@ type DateRangeFieldProps = {
   disabled?: boolean;
   className?: string;
   placeholder?: string;
+  /** ISO date `YYYY-MM-DD` — days before this are not selectable. */
+  minDate?: string;
+  /** ISO date `YYYY-MM-DD` — days after this are not selectable. */
+  maxDate?: string;
   value: DateRangeValue;
   onChange: (value: DateRangeValue) => void;
 };
@@ -109,6 +113,16 @@ function todayIsoDate(): string {
   return toDateKey(now.getFullYear(), now.getMonth() + 1, now.getDate());
 }
 
+function isDateDisabled(dateKey: string, minDate?: string, maxDate?: string): boolean {
+  if (minDate && dateKey < minDate) {
+    return true;
+  }
+  if (maxDate && dateKey > maxDate) {
+    return true;
+  }
+  return false;
+}
+
 export function DateRangeField({
   id,
   name,
@@ -120,6 +134,8 @@ export function DateRangeField({
   disabled = false,
   className,
   placeholder,
+  minDate,
+  maxDate,
   value,
   onChange,
 }: DateRangeFieldProps) {
@@ -137,13 +153,32 @@ export function DateRangeField({
   const [panelStyle, setPanelStyle] = useState<CSSProperties>({});
   const [draftStart, setDraftStart] = useState<string | null>(null);
 
-  const focusDate = value.from || value.to || todayIsoDate();
+  const today = todayIsoDate();
+  const focusDate = value.from || value.to || (minDate && minDate > today ? minDate : today);
   const initialMonth = useMemo((): YearMonth => {
     const parts = parseDateParts(focusDate);
     return { year: parts.year, month: parts.month };
   }, [focusDate]);
 
   const [view, setView] = useState<YearMonth>(initialMonth);
+
+  const canGoPrev = useMemo(() => {
+    if (!minDate) {
+      return true;
+    }
+    const min = parseDateParts(minDate);
+    return view.year > min.year || (view.year === min.year && view.month > min.month);
+  }, [minDate, view.month, view.year]);
+
+  const canGoNext = useMemo(() => {
+    if (!maxDate) {
+      return true;
+    }
+    const max = parseDateParts(maxDate);
+    return view.year < max.year || (view.year === max.year && view.month < max.month);
+  }, [maxDate, view.month, view.year]);
+
+  const todaySelectable = !isDateDisabled(today, minDate, maxDate);
 
   useEffect(() => {
     setMounted(true);
@@ -251,6 +286,10 @@ export function DateRangeField({
   }
 
   function selectDay(dateKey: string) {
+    if (isDateDisabled(dateKey, minDate, maxDate)) {
+      return;
+    }
+
     if (!draftStart) {
       setDraftStart(dateKey);
       onChange({ from: dateKey, to: dateKey });
@@ -268,7 +307,9 @@ export function DateRangeField({
   }
 
   function selectToday() {
-    const today = todayIsoDate();
+    if (!todaySelectable) {
+      return;
+    }
     onChange({ from: today, to: today });
     clearFieldError();
     setDraftStart(null);
@@ -341,7 +382,8 @@ export function DateRangeField({
                   <div className="flex items-center justify-between gap-1 border-b border-surface-100 px-2 py-1.5">
                     <button
                       type="button"
-                      className="inline-flex size-6 items-center justify-center rounded-md text-surface-600 transition hover:bg-surface-50"
+                      className="inline-flex size-6 items-center justify-center rounded-md text-surface-600 transition hover:bg-surface-50 disabled:opacity-35"
+                      disabled={!canGoPrev}
                       onClick={() => shiftMonth(-1)}
                       aria-label={t("common.previousMonth")}
                     >
@@ -352,7 +394,8 @@ export function DateRangeField({
                     </p>
                     <button
                       type="button"
-                      className="inline-flex size-6 items-center justify-center rounded-md text-surface-600 transition hover:bg-surface-50"
+                      className="inline-flex size-6 items-center justify-center rounded-md text-surface-600 transition hover:bg-surface-50 disabled:opacity-35"
+                      disabled={!canGoNext}
                       onClick={() => shiftMonth(1)}
                       aria-label={t("common.nextMonth")}
                     >
@@ -382,9 +425,11 @@ export function DateRangeField({
                       }
 
                       const dateKey = cell.dateKey;
-                      const isStart = dateKey === rangeFrom;
-                      const isEnd = dateKey === rangeTo;
+                      const dayDisabled = isDateDisabled(dateKey, minDate, maxDate);
+                      const isStart = !dayDisabled && dateKey === rangeFrom;
+                      const isEnd = !dayDisabled && dateKey === rangeTo;
                       const inRange =
+                        !dayDisabled &&
                         Boolean(rangeFrom) &&
                         Boolean(rangeTo) &&
                         dateKey >= rangeFrom &&
@@ -404,7 +449,8 @@ export function DateRangeField({
                         >
                           <button
                             type="button"
-                            aria-label={formatShortDate(dateKey, dateLocale)}
+                            disabled={dayDisabled}
+                            aria-label={`${formatShortDate(dateKey, dateLocale)}${dayDisabled ? `, ${t("common.unavailable")}` : ""}`}
                             aria-pressed={isEdge}
                             onClick={() => selectDay(dateKey)}
                             className={cn(
@@ -413,8 +459,11 @@ export function DateRangeField({
                               inRange &&
                                 !isEdge &&
                                 "text-brand-700 dark:text-brand-300",
-                              !inRange &&
+                              !dayDisabled &&
+                                !inRange &&
                                 "text-surface-800 hover:bg-brand-50 hover:text-brand-700 dark:hover:bg-brand-500/20 dark:hover:text-brand-300",
+                              dayDisabled &&
+                                "cursor-not-allowed text-surface-300 line-through decoration-surface-300/80",
                             )}
                           >
                             {cell.dayNumber}
@@ -427,7 +476,8 @@ export function DateRangeField({
                   <div className="flex items-center justify-between gap-2 border-t border-surface-100 px-2 py-1.5">
                     <button
                       type="button"
-                      className="rounded-md px-2 py-1 text-[11px] font-semibold text-brand-700 transition hover:bg-brand-50 dark:text-brand-300 dark:hover:bg-brand-500/20"
+                      disabled={!todaySelectable}
+                      className="rounded-md px-2 py-1 text-[11px] font-semibold text-brand-700 transition hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-40 dark:text-brand-300 dark:hover:bg-brand-500/20"
                       onClick={selectToday}
                     >
                       Today
